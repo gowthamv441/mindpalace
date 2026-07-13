@@ -16,7 +16,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -46,7 +47,8 @@ body {
 .sidebar-header { margin-bottom: 32px; padding: 0 8px; }
 
 .logo {
-  font-size: 1.1rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -63,8 +65,11 @@ body {
   border-radius: 6px;
   color: var(--muted);
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   transition: all 0.15s ease;
 }
 
@@ -180,7 +185,8 @@ body {
 }
 
 .section-title {
-  font-size: 1.4rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -216,13 +222,15 @@ body {
 }
 
 .stat .num {
-  font-size: 1.4rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--accent);
 }
 
 .stat .label {
-  font-size: 0.65rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.55rem;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -275,7 +283,7 @@ body {
 }
 
 .day-title { text-align: center; }
-.day-title .n { font-size: 1.1rem; font-weight: 700; }
+.day-title .n { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700; }
 .day-title .status { font-size: 0.75rem; color: var(--muted); }
 .day-title .status.complete { color: var(--accent); }
 
@@ -333,7 +341,8 @@ body {
 
 /* Grid */
 .grid-section h2 {
-  font-size: 0.85rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
   color: var(--muted);
   margin: 0 0 10px 0;
   text-transform: uppercase;
@@ -513,7 +522,8 @@ body {
 }
 
 .modal-title {
-  font-size: 1rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 16px;
   color: var(--accent);
@@ -681,6 +691,83 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* Diary page */
+.diary-page {
+  border: 1px solid rgba(76, 201, 255, 0.3);
+  border-radius: 8px;
+  box-shadow: var(--accent-glow);
+  overflow: hidden;
+}
+
+.diary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(76, 201, 255, 0.03);
+}
+
+.diary-date {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.diary-header .mood-select { gap: 6px; }
+.diary-header .mood-option { width: 30px; height: 30px; font-size: 1rem; }
+
+.diary-textarea {
+  width: 100%;
+  min-height: 280px;
+  padding: 20px;
+  background: var(--bg);
+  border: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  line-height: 1.8;
+  resize: vertical;
+  outline: none;
+}
+
+.diary-textarea::placeholder {
+  color: rgba(139, 172, 193, 0.4);
+}
+
+.diary-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  background: rgba(76, 201, 255, 0.03);
+  gap: 12px;
+}
+
+.diary-tags {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.diary-tags:focus { border-color: var(--accent); }
+
+.diary-actions {
+  display: flex;
+  gap: 6px;
+}
 
 /* Glow text utility */
 .glow-text {

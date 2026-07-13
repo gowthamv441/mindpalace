@@ -1,5 +1,6 @@
 const Journal = {
   currentDate: new Date(),
+  editing: false,
 
   init() {
     this.render();
@@ -14,7 +15,6 @@ const Journal = {
     section.innerHTML = `
       <div class="section-header">
         <h2 class="section-title glow-text">Journal</h2>
-        <button class="btn btn-primary" onclick="Journal.openEditor()">+ New Entry</button>
       </div>
       <div class="section-sub">Your thoughts, one day at a time</div>
 
@@ -22,43 +22,47 @@ const Journal = {
         <button onclick="Journal.prevDay()">&larr;</button>
         <div class="day-title">
           <div class="n">${this.formatDisplayDate(this.currentDate)}</div>
-          <div class="status ${entry ? 'complete' : ''}">${entry ? 'Entry written ✓' : 'No entry yet'}</div>
+          <div class="status ${entry ? 'complete' : ''}">${entry ? 'Entry written ✓' : ''}</div>
         </div>
         <button onclick="Journal.nextDay()">&rarr;</button>
       </div>
 
-      ${entry ? this.renderEntry(entry) : this.renderEmpty()}
+      ${this.renderDiaryPage(entry, dateStr)}
 
-      ${entries.length > 0 ? `
+      ${entries.length > 1 ? `
         <div class="panel" style="margin-top: 24px;">
           <div class="corner-bl"></div>
           <div class="corner-br"></div>
           <h2 style="font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px;">Recent Entries</h2>
-          ${entries.slice(0, 7).map(e => this.renderEntryCard(e)).join('')}
+          ${entries.filter(e => e.date !== dateStr).slice(0, 5).map(e => this.renderEntryCard(e)).join('')}
         </div>
       ` : ''}
     `;
   },
 
-  renderEntry(entry) {
+  renderDiaryPage(entry, dateStr) {
+    const content = entry ? entry.content : '';
+    const mood = entry ? entry.mood : null;
+    const tags = entry && entry.tags ? entry.tags.join(', ') : '';
+
     return `
-      <div class="card" style="border-color: rgba(76, 201, 255, 0.3); box-shadow: var(--accent-glow);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.3rem;">${entry.mood || ''}</span>
-            <span class="badge badge-accent">${entry.mood ? this.moodLabel(entry.mood) : ''}</span>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn btn-sm btn-ghost" onclick="Journal.openEditor('${entry.date}')">Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="Journal.deleteEntry('${entry.date}')">Delete</button>
+      <div class="diary-page">
+        <div class="diary-header">
+          <div class="diary-date">${dateStr}</div>
+          <div class="mood-select" id="mood-select">
+            ${['😊', '😌', '😐', '😔', '😤'].map(m => `
+              <div class="mood-option ${mood === m ? 'selected' : ''}" data-mood="${m}" onclick="Journal.selectMood(this)">${m}</div>
+            `).join('')}
           </div>
         </div>
-        <div style="font-size: 0.9rem; line-height: 1.7; white-space: pre-wrap;">${this.escapeHtml(entry.content)}</div>
-        ${entry.tags && entry.tags.length ? `
-          <div style="margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap;">
-            ${entry.tags.map(t => `<span class="badge badge-success">${t}</span>`).join('')}
+        <textarea class="diary-textarea" id="journal-content" placeholder="What's on your mind today...">${this.escapeHtml(content)}</textarea>
+        <div class="diary-footer">
+          <input class="diary-tags" id="journal-tags" placeholder="Tags: work, personal, gratitude..." value="${this.escapeHtml(tags)}">
+          <div class="diary-actions">
+            ${entry ? `<button class="btn btn-sm btn-danger" onclick="Journal.deleteEntry('${dateStr}')">Delete</button>` : ''}
+            <button class="btn btn-sm btn-primary" onclick="Journal.saveEntry('${dateStr}')">Save</button>
           </div>
-        ` : ''}
+        </div>
       </div>
     `;
   },
@@ -76,55 +80,6 @@ const Journal = {
         </div>
       </div>
     `;
-  },
-
-  renderEmpty() {
-    return `
-      <div class="empty-state">
-        <div class="empty-state-icon">📝</div>
-        <div class="empty-state-text">No entry for this day</div>
-        <button class="btn btn-primary" onclick="Journal.openEditor()">Write something</button>
-      </div>
-    `;
-  },
-
-  openEditor(editDate) {
-    const dateStr = editDate || Store.formatDate(this.currentDate);
-    const existing = Store.get(`journal_${dateStr}`);
-
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.id = 'journal-modal';
-    overlay.innerHTML = `
-      <div class="modal">
-        <div class="modal-title">${existing ? 'Edit Entry' : 'New Entry'} — ${dateStr}</div>
-
-        <div class="form-group">
-          <label class="form-label">How are you feeling?</label>
-          <div class="mood-select" id="mood-select">
-            ${['😊', '😌', '😐', '😔', '😤'].map(m => `
-              <div class="mood-option ${existing && existing.mood === m ? 'selected' : ''}" data-mood="${m}" onclick="Journal.selectMood(this)">${m}</div>
-            `).join('')}
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">What's on your mind?</label>
-          <textarea class="form-textarea" id="journal-content" placeholder="Write freely...">${existing ? this.escapeHtml(existing.content) : ''}</textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Tags (comma separated)</label>
-          <input class="form-input" id="journal-tags" placeholder="e.g. work, personal, gratitude" value="${existing && existing.tags ? existing.tags.join(', ') : ''}">
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn btn-ghost" onclick="Journal.closeModal()">Cancel</button>
-          <button class="btn btn-primary" onclick="Journal.saveEntry('${dateStr}')">Save</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
   },
 
   selectMood(el) {
@@ -149,7 +104,6 @@ const Journal = {
       updatedAt: new Date().toISOString()
     });
 
-    this.closeModal();
     this.render();
   },
 
@@ -157,11 +111,6 @@ const Journal = {
     if (!confirm('Delete this journal entry?')) return;
     Store.remove(`journal_${dateStr}`);
     this.render();
-  },
-
-  closeModal() {
-    const modal = document.getElementById('journal-modal');
-    if (modal) modal.remove();
   },
 
   prevDay() {
