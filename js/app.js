@@ -1,16 +1,18 @@
 const App = {
-  currentSection: 'journal',
+  currentSection: 'home',
 
   init() {
     this.bindNav();
+    Home.init();
     Journal.init();
     Habits.init();
     Goals.init();
     Achievements.init();
+    Profile.init();
   },
 
   bindNav() {
-    document.querySelectorAll('.nav-link, .tab').forEach(link => {
+    document.querySelectorAll('.tab').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const section = link.dataset.section;
@@ -21,10 +23,6 @@ const App = {
 
   navigate(section) {
     this.currentSection = section;
-
-    document.querySelectorAll('.nav-link').forEach(el => {
-      el.classList.toggle('active', el.dataset.section === section);
-    });
 
     document.querySelectorAll('.tab').forEach(el => {
       el.classList.toggle('active', el.dataset.section === section);
