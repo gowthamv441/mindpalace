@@ -9,6 +9,7 @@ const App = {
     Goals.init();
     Achievements.init();
     Library.init();
+    Workouts.init();
     Settings.init();
   },
 
@@ -36,6 +37,7 @@ const App = {
     if (section === 'settings') Settings.render();
     if (section === 'home') Home.render();
     if (section === 'library') Library.render();
+    if (section === 'workouts') Workouts.render();
   }
 };
 

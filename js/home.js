@@ -171,9 +171,9 @@ const Home = {
             <img class="home-nav-img" src="https://api.iconify.design/mdi/book-edit-outline.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Journal</span>
           </div>
-          <div class="home-nav-card" onclick="App.navigate('library')">
-            <img class="home-nav-img" src="https://api.iconify.design/mdi/bookshelf.svg?color=%234cc9ff" alt="">
-            <span class="home-nav-label">Library</span>
+          <div class="home-nav-card" onclick="App.navigate('workouts')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/dumbbell.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Workout</span>
           </div>
           <div class="home-nav-card" onclick="App.navigate('achievements')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/trophy-outline.svg?color=%234cc9ff" alt="">
