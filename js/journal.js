@@ -96,6 +96,8 @@ const Journal = {
     const tagsRaw = document.getElementById('journal-tags').value;
     const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
+    const isNew = !Store.get(`journal_${dateStr}`);
+
     Store.set(`journal_${dateStr}`, {
       date: dateStr,
       content,
@@ -103,6 +105,11 @@ const Journal = {
       tags,
       updatedAt: new Date().toISOString()
     });
+
+    if (isNew) {
+      const result = XP.award('journal', 'Journal entry', XP.rewards.journal);
+      XP.showXPGain(result.amount, 'Journal');
+    }
 
     this.render();
   },

@@ -200,6 +200,10 @@ const Goals = {
     goal.completedAt = new Date().toISOString();
     if (goal.target) goal.current = goal.target;
     this.saveGoals(goals);
+
+    const result = XP.award('goal', goal.title, XP.rewards.goalComplete);
+    XP.showXPGain(result.amount, 'Goal Complete');
+
     this.render();
   },
 

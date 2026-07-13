@@ -924,6 +924,144 @@ body {
   gap: 10px;
 }
 
+/* XP bar */
+.xp-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+/* Quest list */
+.quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quest-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.quest-item:hover:not(.done) {
+  border-color: rgba(76, 201, 255, 0.4);
+}
+
+.quest-item.done {
+  border-color: var(--accent);
+  background: var(--done-bg);
+}
+
+.quest-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.quest-item.done .quest-check {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.quest-info { flex: 1; }
+.quest-name { font-size: 0.85rem; font-weight: 500; }
+.quest-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.quest-rank { font-weight: 700; }
+
+/* Rank-up gate */
+.gate-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gate-req {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.gate-req.met {
+  border-color: rgba(76, 201, 255, 0.3);
+  color: var(--accent);
+}
+
+.gate-check {
+  font-size: 0.9rem;
+  width: 20px;
+  text-align: center;
+}
+
+.gate-req.met .gate-check { color: var(--accent); }
+.gate-req:not(.met) .gate-check { color: var(--danger); }
+
+.gate-progress {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* XP Toast */
+.xp-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--surface);
+  border: 1px solid rgba(76, 201, 255, 0.4);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 600;
+  z-index: 2000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(76, 201, 255, 0.2);
+}
+
+.xp-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.xp-toast.level-up {
+  border-color: #ffd700;
+  color: #ffd700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+.xp-toast-icon {
+  margin-right: 6px;
+}
+
 /* Glow text utility */
 .glow-text {
   text-shadow: 0 0 10px rgba(76, 201, 255, 0.5), 0 0 20px rgba(76, 201, 255, 0.2);

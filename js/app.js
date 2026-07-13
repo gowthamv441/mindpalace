@@ -8,7 +8,7 @@ const App = {
     Habits.init();
     Goals.init();
     Achievements.init();
-    Profile.init();
+    Settings.init();
   },
 
   bindNav() {
@@ -31,6 +31,9 @@ const App = {
     document.querySelectorAll('.section').forEach(el => {
       el.classList.toggle('active', el.id === `section-${section}`);
     });
+
+    if (section === 'settings') Settings.render();
+    if (section === 'home') Home.render();
   }
 };
 

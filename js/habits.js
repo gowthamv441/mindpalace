@@ -128,8 +128,17 @@ const Habits = {
   toggle(habitId) {
     const day = this.currentDay;
     const dayData = this.getDayData(day);
+    const wasDone = !!dayData[habitId];
     dayData[habitId] = !dayData[habitId];
     this.setDayData(day, dayData);
+
+    if (!wasDone && dayData[habitId]) {
+      const habits = this.getHabits();
+      const habit = habits.find(h => h.id === habitId);
+      const result = XP.award('habit', habit ? habit.label : 'Habit', XP.rewards.habit);
+      XP.showXPGain(result.amount, 'Habit');
+    }
+
     this.render();
   },
 
