@@ -19,10 +19,10 @@ const Goals = {
 
     section.innerHTML = `
       <div class="section-header">
-        <h2 class="section-title glow-text">Goals</h2>
-        <button class="btn btn-primary" onclick="Goals.openEditor()">+ New Goal</button>
+        <h2 class="section-title glow-text">Boss Fights</h2>
+        <button class="btn btn-primary" onclick="Goals.openEditor()">+ New Boss</button>
       </div>
-      <div class="section-sub">Set targets · track progress · level up</div>
+      <div class="section-sub">Each goal is a boss · defeat them · gain shadows</div>
 
       ${active.length === 0 && completed.length === 0 ? `
         <div class="empty-state">
@@ -52,33 +52,38 @@ const Goals = {
 
   renderGoalCard(goal) {
     const progress = goal.target ? Math.min(100, Math.round((goal.current / goal.target) * 100)) : 0;
+    const bossRank = goal.category === 'long' ? 'A' : 'B';
+    const hpRemaining = goal.target ? Math.max(0, 100 - progress) : (goal.completed ? 0 : 100);
+
     return `
-      <div class="card" style="${goal.completed ? 'opacity: 0.6;' : ''}">
+      <div class="card" style="${goal.completed ? 'border-color: var(--accent); background: var(--done-bg);' : ''}">
         <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px;">
           <div>
-            <div style="font-weight: 600; font-size: 0.95rem;">${this.escapeHtml(goal.title)}</div>
+            <div style="font-weight: 600; font-size: 0.95rem;">${goal.completed ? '&#9760; ' : '&#9876; '}${this.escapeHtml(goal.title)}</div>
             ${goal.description ? `<div style="font-size: 0.78rem; color: var(--muted); margin-top: 4px;">${this.escapeHtml(goal.description)}</div>` : ''}
           </div>
-          <span class="badge badge-accent">${goal.category === 'short' ? 'Short-term' : 'Long-term'}</span>
+          <span class="badge badge-accent">${bossRank}-Rank Boss</span>
         </div>
 
-        ${goal.target ? `
-          <div class="goal-progress">
-            <div class="goal-meta">
-              <span>${goal.current || 0} / ${goal.target} ${goal.unit || ''}</span>
-              <span style="color: var(--accent);">${progress}%</span>
+        ${!goal.completed ? `
+          <div class="boss-hp-bar">
+            <div class="boss-hp-label">
+              <span>Boss HP</span>
+              <span>${goal.target ? `${goal.current || 0}/${goal.target} ${goal.unit || ''}` : `${hpRemaining}%`}</span>
             </div>
             <div class="progress-bar" style="margin-bottom: 0;">
-              <div class="progress-fill" style="width: ${progress}%"></div>
+              <div class="progress-fill boss-fill" style="width: ${hpRemaining}%"></div>
             </div>
           </div>
-        ` : ''}
+        ` : `
+          <div style="font-size: 0.8rem; color: var(--accent); margin-top: 4px;">&#10003; Defeated — Shadow acquired</div>
+        `}
 
-        ${goal.deadline ? `<div style="font-size: 0.7rem; color: var(--muted); margin-top: 8px;">Deadline: <span style="color: var(--accent);">${goal.deadline}</span></div>` : ''}
+        ${goal.deadline ? `<div style="font-size: 0.7rem; color: var(--muted); margin-top: 8px;">Time Limit: <span style="color: var(--danger);">${goal.deadline}</span></div>` : ''}
 
         <div style="display: flex; gap: 6px; margin-top: 12px;">
-          ${!goal.completed && goal.target ? `<button class="btn btn-sm btn-primary" onclick="Goals.updateProgress('${goal.id}')">Update</button>` : ''}
-          ${!goal.completed ? `<button class="btn btn-sm btn-ghost" onclick="Goals.markComplete('${goal.id}')">Complete</button>` : ''}
+          ${!goal.completed && goal.target ? `<button class="btn btn-sm btn-primary" onclick="Goals.updateProgress('${goal.id}')">Attack</button>` : ''}
+          ${!goal.completed ? `<button class="btn btn-sm btn-ghost" onclick="Goals.markComplete('${goal.id}')">Defeat</button>` : ''}
           <button class="btn btn-sm btn-ghost" onclick="Goals.openEditor('${goal.id}')">Edit</button>
           <button class="btn btn-sm btn-danger" onclick="Goals.deleteGoal('${goal.id}')">×</button>
         </div>
@@ -202,7 +207,16 @@ const Goals = {
     this.saveGoals(goals);
 
     const result = XP.award('goal', goal.title, XP.rewards.goalComplete);
-    XP.showXPGain(result.amount, 'Goal Complete');
+    XP.showXPGain(result.amount, 'Boss Defeated!');
+
+    const shadowType = Shadows.getShadowTypeForGoal(goal);
+    const shadowRank = Shadows.getRankForGoal(goal);
+    Shadows.addShadow({
+      name: goal.title,
+      type: shadowType,
+      source: `goal:${goal.id}`,
+      rank: shadowRank
+    });
 
     this.render();
   },

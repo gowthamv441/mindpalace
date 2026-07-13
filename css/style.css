@@ -625,6 +625,7 @@ body {
   .home-nav-cards { gap: 8px; }
   .home-nav-img { width: 24px; height: 24px; }
   .home-nav-card { padding: 12px 6px; }
+  .shadow-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Scrollbar */
@@ -1060,6 +1061,60 @@ body {
 
 .xp-toast-icon {
   margin-right: 6px;
+}
+
+/* Boss HP bar */
+.boss-hp-bar { margin-top: 6px; }
+.boss-hp-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.boss-fill {
+  background: linear-gradient(90deg, #ef4444, #f97316) !important;
+}
+
+/* Shadow Army */
+.shadow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.shadow-card {
+  text-align: center;
+  padding: 12px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  transition: all 0.15s;
+}
+
+.shadow-card:hover {
+  border-color: rgba(76, 201, 255, 0.3);
+  box-shadow: var(--accent-glow);
+}
+
+.shadow-icon {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.shadow-name {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shadow-meta {
+  font-size: 0.55rem;
+  color: var(--muted);
+  margin-top: 2px;
 }
 
 /* Glow text utility */
