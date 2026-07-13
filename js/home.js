@@ -36,13 +36,6 @@ const Home = {
       <div class="panel">
         <div class="corner-bl"></div>
         <div class="corner-br"></div>
-        <h3 class="profile-section-title">Bio</h3>
-        <p class="profile-bio">${profile.bio ? Profile.escapeHtml(profile.bio) : 'No bio set yet. Edit your profile to add one.'}</p>
-      </div>
-
-      <div class="panel" style="margin-top: 20px;">
-        <div class="corner-bl"></div>
-        <div class="corner-br"></div>
         <h3 class="profile-section-title">Summary</h3>
         <div class="profile-summary-grid">
           <div class="stat">
