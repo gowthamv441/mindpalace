@@ -626,6 +626,7 @@ body {
   .home-nav-img { width: 24px; height: 24px; }
   .home-nav-card { padding: 12px 6px; }
   .shadow-grid { grid-template-columns: repeat(2, 1fr); }
+  .shop-grid { grid-template-columns: 1fr; }
 }
 
 /* Scrollbar */
@@ -1176,6 +1177,122 @@ body {
   justify-content: center;
   font-size: 1rem;
   flex-shrink: 0;
+}
+
+/* Skill Tree */
+.skill-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-node {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+
+.skill-node.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.skill-node.available {
+  border-color: rgba(76, 201, 255, 0.3);
+  cursor: pointer;
+}
+
+.skill-node.available:hover {
+  border-color: var(--accent);
+  box-shadow: var(--accent-glow);
+}
+
+.skill-node.partial {
+  border-color: rgba(76, 201, 255, 0.4);
+  background: rgba(76, 201, 255, 0.03);
+}
+
+.skill-node.maxed {
+  border-color: var(--accent);
+  background: var(--done-bg);
+  box-shadow: var(--accent-glow);
+}
+
+.skill-node-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.skill-node-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.skill-node-level {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.skill-node-desc {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.skill-node-cost {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* Shop */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.shop-item {
+  padding: 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.shop-item:hover:not(.owned) {
+  border-color: rgba(76, 201, 255, 0.3);
+}
+
+.shop-item.owned {
+  opacity: 0.5;
+  border-color: var(--accent);
+}
+
+.shop-item-type {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.shop-item-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.shop-item-desc {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.shop-item-price {
+  font-size: 0.75rem;
 }
 
 /* Glow text utility */

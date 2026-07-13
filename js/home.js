@@ -175,6 +175,16 @@ const Home = {
             <img class="home-nav-img" src="https://api.iconify.design/mdi/dumbbell.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Workout</span>
           </div>
+          <div class="home-nav-card" onclick="App.navigate('skills')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/graph-outline.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Skills</span>
+          </div>
+          <div class="home-nav-card" onclick="App.navigate('shop')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/store-outline.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Shop</span>
+          </div>
+        </div>
+        <div class="home-nav-cards" style="margin-top: 10px;">
           <div class="home-nav-card" onclick="App.navigate('achievements')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/trophy-outline.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Achieve</span>
@@ -182,6 +192,14 @@ const Home = {
           <div class="home-nav-card" onclick="App.navigate('settings')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/cog-outline.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Settings</span>
+          </div>
+          <div class="home-nav-card" onclick="App.navigate('library')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/bookshelf.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Library</span>
+          </div>
+          <div class="home-nav-card" onclick="App.navigate('habits')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/sword-cross.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Habits</span>
           </div>
         </div>
       </div>

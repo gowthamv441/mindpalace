@@ -3,6 +3,7 @@ const App = {
 
   init() {
     this.bindNav();
+    Shop.loadTheme();
     Home.init();
     Journal.init();
     Habits.init();
@@ -38,6 +39,8 @@ const App = {
     if (section === 'home') Home.render();
     if (section === 'library') Library.render();
     if (section === 'workouts') Workouts.render();
+    if (section === 'skills') SkillTree.render();
+    if (section === 'shop') Shop.render();
   }
 };
 
