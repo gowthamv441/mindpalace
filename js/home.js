@@ -171,13 +171,13 @@ const Home = {
             <img class="home-nav-img" src="https://api.iconify.design/mdi/book-edit-outline.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Journal</span>
           </div>
-          <div class="home-nav-card" onclick="App.navigate('habits')">
-            <img class="home-nav-img" src="https://api.iconify.design/mdi/sword-cross.svg?color=%234cc9ff" alt="">
-            <span class="home-nav-label">Habits</span>
+          <div class="home-nav-card" onclick="App.navigate('library')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/bookshelf.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Library</span>
           </div>
-          <div class="home-nav-card" onclick="App.navigate('goals')">
-            <img class="home-nav-img" src="https://api.iconify.design/mdi/target-arrow.svg?color=%234cc9ff" alt="">
-            <span class="home-nav-label">Goals</span>
+          <div class="home-nav-card" onclick="App.navigate('achievements')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/trophy-outline.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Achieve</span>
           </div>
           <div class="home-nav-card" onclick="App.navigate('settings')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/cog-outline.svg?color=%234cc9ff" alt="">

@@ -8,6 +8,7 @@ const App = {
     Habits.init();
     Goals.init();
     Achievements.init();
+    Library.init();
     Settings.init();
   },
 
@@ -34,6 +35,7 @@ const App = {
 
     if (section === 'settings') Settings.render();
     if (section === 'home') Home.render();
+    if (section === 'library') Library.render();
   }
 };
 
