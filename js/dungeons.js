@@ -1,49 +1,4 @@
 const Dungeons = {
-  types: [
-    { key: 'discipline', name: 'Discipline Dungeon', icon: '&#9876;' },
-    { key: 'strength', name: 'Strength Dungeon', icon: '&#9889;' },
-    { key: 'intelligence', name: 'Knowledge Dungeon', icon: '&#9733;' },
-    { key: 'vitality', name: 'Vitality Dungeon', icon: '&#9829;' }
-  ],
-
-  weeklyChallenges: {
-    discipline: [
-      'Complete all habits for 5 days',
-      'Write journal entries for 5 days',
-      'Complete all daily quests for 3 days',
-      'No missed habits for 4 consecutive days',
-      'Meditate or reflect every day this week'
-    ],
-    strength: [
-      'Log 4 workouts this week',
-      'Hit 10,000 steps for 5 days',
-      'Complete 200 pushups total',
-      'Exercise for 30+ minutes 5 times',
-      'Try a new exercise'
-    ],
-    intelligence: [
-      'Read for 2 hours total this week',
-      'Learn 3 new concepts',
-      'Complete a course module',
-      'Write notes on what you learned for 4 days',
-      'Solve 3 coding challenges'
-    ],
-    vitality: [
-      'Drink 3L water for 5 days',
-      'Sleep 7+ hours for 5 nights',
-      'Eat clean for 5 days',
-      'No caffeine after 2 PM for 5 days',
-      'Cook healthy meals 4 times'
-    ]
-  },
-
-  monthlyRaids: [
-    { name: 'The 30-Day Forge', desc: 'Complete 80% of all habits for the entire month', target: 80 },
-    { name: 'Shadow Monarch Trial', desc: 'Reach 3 completed goals this month', target: 3 },
-    { name: 'Tower of Knowledge', desc: 'Write 20 journal entries this month', target: 20 },
-    { name: 'Iron Will Gauntlet', desc: 'Maintain a 14-day streak', target: 14 }
-  ],
-
   getWeekly() {
     const weekId = this.getCurrentWeekId();
     const saved = Store.get(`dungeon_weekly_${weekId}`);
@@ -59,25 +14,27 @@ const Dungeons = {
   },
 
   generateWeekly(weekId) {
-    const seed = this.hashStr(weekId);
-    const typeIdx = seed % this.types.length;
-    const type = this.types[typeIdx];
-    const pool = this.weeklyChallenges[type.key];
-
+    const goals = (Store.get('goals') || []).filter(g => !g.completed);
     const challenges = [];
-    const used = new Set();
-    for (let i = 0; i < 3; i++) {
-      let idx = (seed + i * 3) % pool.length;
-      while (used.has(idx)) idx = (idx + 1) % pool.length;
-      used.add(idx);
-      challenges.push({ id: `wc_${i}`, name: pool[idx], completed: false });
+
+    if (goals.length > 0) {
+      goals.slice(0, 3).forEach((goal, i) => {
+        challenges.push({
+          id: `wc_${i}`,
+          name: this.weeklyChallenge(goal),
+          goalId: goal.id,
+          completed: false
+        });
+      });
+    } else {
+      challenges.push({ id: 'wc_0', name: 'Complete all habits for 5 days', completed: false });
+      challenges.push({ id: 'wc_1', name: 'Complete all daily tasks for 3 days', completed: false });
+      challenges.push({ id: 'wc_2', name: 'Log 3 workouts this week', completed: false });
     }
 
     const data = {
       id: weekId,
-      name: type.name,
-      type: type.key,
-      icon: type.icon,
+      name: 'Weekly Dungeon',
       startDate: this.getWeekStart(),
       endDate: this.getWeekEnd(),
       challenges,
@@ -89,15 +46,50 @@ const Dungeons = {
     return data;
   },
 
+  weeklyChallenge(goal) {
+    const title = goal.title.toLowerCase();
+    if (title.includes('weight') || title.includes('muscle') || title.includes('gym') || title.includes('fitness')) {
+      const options = [
+        `Meet calorie goal for 5 days (${goal.title})`,
+        `Work out 4 times this week (${goal.title})`,
+        `Hit protein target 5 days (${goal.title})`
+      ];
+      return options[Math.floor(this.hashStr(goal.id) % options.length)];
+    }
+    if (title.includes('read') || title.includes('learn') || title.includes('study') || title.includes('course')) {
+      const options = [
+        `Study 1 hour daily for 5 days (${goal.title})`,
+        `Complete 3 sessions this week (${goal.title})`,
+        `Take notes every study day (${goal.title})`
+      ];
+      return options[Math.floor(this.hashStr(goal.id) % options.length)];
+    }
+    if (title.includes('save') || title.includes('money') || title.includes('invest')) {
+      return `Track expenses every day this week (${goal.title})`;
+    }
+    return `Make progress on "${goal.title}" 4 days this week`;
+  },
+
   generateMonthly(monthId) {
-    const seed = this.hashStr(monthId);
-    const raid = this.monthlyRaids[seed % this.monthlyRaids.length];
+    const goals = (Store.get('goals') || []).filter(g => !g.completed);
+    let name, description, target;
+
+    if (goals.length > 0) {
+      const mainGoal = goals[0];
+      name = `Raid: ${mainGoal.title}`;
+      description = `Monthly milestone for your top goal: "${mainGoal.title}"`;
+      target = mainGoal.target ? Math.ceil(mainGoal.target * 0.3) : 10;
+    } else {
+      name = 'The 30-Day Forge';
+      description = 'Complete 80% of all habits for the month';
+      target = 24;
+    }
 
     const data = {
       id: monthId,
-      name: raid.name,
-      description: raid.desc,
-      target: raid.target,
+      name,
+      description,
+      target,
       progress: 0,
       startDate: this.getMonthStart(),
       endDate: this.getMonthEnd(),
@@ -137,13 +129,6 @@ const Dungeons = {
       data.cleared = true;
       XP.award('raid', 'Monthly Raid Cleared', data.rewards.xp);
       XP.showXPGain(data.rewards.xp, 'Raid Boss Defeated!');
-
-      Shadows.addShadow({
-        name: data.name + ' Shadow',
-        type: 'knight',
-        source: `raid:${monthId}`,
-        rank: 'B'
-      });
     }
 
     Store.set(`dungeon_monthly_${monthId}`, data);
@@ -165,7 +150,7 @@ const Dungeons = {
     const now = new Date();
     const day = now.getDay();
     const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(now.setDate(diff)).toISOString().split('T')[0];
+    return new Date(now.getFullYear(), now.getMonth(), diff).toISOString().split('T')[0];
   },
 
   getWeekEnd() {

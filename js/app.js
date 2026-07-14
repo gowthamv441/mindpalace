@@ -5,7 +5,6 @@ const App = {
     this.bindNav();
     Shop.loadTheme();
     Home.init();
-    Journal.init();
     Habits.init();
     Goals.init();
     Achievements.init();

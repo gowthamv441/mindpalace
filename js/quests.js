@@ -1,128 +1,149 @@
 const Quests = {
-  questPool: {
-    discipline: [
-      { name: 'Wake up before 6 AM', rank: 'C' },
-      { name: 'No social media until noon', rank: 'B' },
-      { name: 'Meditate for 20 minutes', rank: 'C' },
-      { name: 'Cold shower', rank: 'B' },
-      { name: 'Read for 30 minutes', rank: 'C' },
-      { name: 'No junk food today', rank: 'C' },
-      { name: 'Write 500 words', rank: 'B' },
-      { name: 'Complete all habits before noon', rank: 'A' },
-      { name: 'No phone for 2 hours straight', rank: 'B' },
-      { name: 'Plan tomorrow before bed', rank: 'D' },
-    ],
-    strength: [
-      { name: 'Do 50 pushups', rank: 'C' },
-      { name: 'Do 100 pushups', rank: 'B' },
-      { name: 'Run 3 km', rank: 'C' },
-      { name: 'Run 5 km', rank: 'B' },
-      { name: 'Hold plank for 3 minutes', rank: 'B' },
-      { name: '10,000 steps', rank: 'C' },
-      { name: '15,000 steps', rank: 'B' },
-      { name: 'Workout for 60+ minutes', rank: 'A' },
-      { name: 'Stretch for 15 minutes', rank: 'D' },
-      { name: 'Do 200 bodyweight reps total', rank: 'A' },
-    ],
-    intelligence: [
-      { name: 'Learn one new concept', rank: 'D' },
-      { name: 'Watch an educational video', rank: 'D' },
-      { name: 'Read 20 pages', rank: 'C' },
-      { name: 'Read 50 pages', rank: 'B' },
-      { name: 'Solve a coding challenge', rank: 'C' },
-      { name: 'Write notes on what you learned', rank: 'C' },
-      { name: 'Teach someone something', rank: 'B' },
-      { name: 'Study for 2 hours uninterrupted', rank: 'A' },
-      { name: 'Complete a course module', rank: 'B' },
-      { name: 'Read a research paper', rank: 'A' },
-    ],
-    vitality: [
-      { name: 'Drink 3 litres of water', rank: 'C' },
-      { name: 'Eat 5 servings of vegetables', rank: 'C' },
-      { name: 'Sleep 8 hours', rank: 'C' },
-      { name: 'No caffeine after 2 PM', rank: 'D' },
-      { name: 'Cook a healthy meal', rank: 'C' },
-      { name: 'No sugar today', rank: 'B' },
-      { name: 'Take vitamins', rank: 'D' },
-      { name: 'Sunlight within 30 min of waking', rank: 'D' },
-      { name: 'No eating after 8 PM', rank: 'B' },
-      { name: 'Full clean eating day', rank: 'A' },
-    ]
-  },
-
   getToday() {
     const today = Store.formatDate(new Date());
-    const saved = Store.get(`quests_${today}`);
-    if (saved) return saved;
-    return this.generate(today);
+    return Store.get(`quests_${today}`) || { date: today, tasks: [] };
   },
 
-  generate(dateStr) {
-    const seed = this.hashDate(dateStr);
-    const categories = Object.keys(this.questPool);
-    const quests = [];
+  getTomorrow() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateStr = Store.formatDate(tomorrow);
+    return Store.get(`quests_${dateStr}`) || { date: dateStr, tasks: [] };
+  },
 
-    for (let i = 0; i < 4; i++) {
-      const cat = categories[i % categories.length];
-      const pool = this.questPool[cat];
-      const idx = (seed + i * 7) % pool.length;
-      const quest = pool[idx];
-      quests.push({
-        id: `quest_${dateStr}_${i}`,
-        name: quest.name,
-        rank: quest.rank,
-        type: cat,
-        xp: XP.rewards[`quest${quest.rank}`],
-        completed: false
-      });
-    }
-
-    const data = {
-      date: dateStr,
-      quests,
-      allCompleteBonus: 50,
-      bonusClaimed: false
-    };
-
+  saveTasks(dateStr, data) {
     Store.set(`quests_${dateStr}`, data);
-    return data;
   },
 
-  hashDate(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash);
+  addTask(dateStr, task) {
+    const data = Store.get(`quests_${dateStr}`) || { date: dateStr, tasks: [] };
+    data.tasks.push({
+      id: Store.generateId(),
+      name: task.name,
+      time: task.time,
+      rank: this.rankFromTime(task.time),
+      xp: 0,
+      completed: false,
+      completedAt: null
+    });
+    data.tasks.sort((a, b) => a.time.localeCompare(b.time));
+    this.saveTasks(dateStr, data);
   },
 
-  completeQuest(questId) {
+  removeTask(dateStr, taskId) {
+    const data = Store.get(`quests_${dateStr}`) || { date: dateStr, tasks: [] };
+    data.tasks = data.tasks.filter(t => t.id !== taskId);
+    this.saveTasks(dateStr, data);
+  },
+
+  completeTask(taskId) {
     const today = Store.formatDate(new Date());
     const data = this.getToday();
-    const quest = data.quests.find(q => q.id === questId);
-    if (!quest || quest.completed) return;
+    const task = data.tasks.find(t => t.id === taskId);
+    if (!task || task.completed) return;
 
-    quest.completed = true;
-    Store.set(`quests_${today}`, data);
+    task.completed = true;
+    task.completedAt = new Date().toISOString();
 
-    const result = XP.award('quest', quest.name, quest.xp);
-    XP.showXPGain(result.amount, quest.name);
+    const now = new Date();
+    const [hours, minutes] = task.time.split(':').map(Number);
+    const deadline = new Date();
+    deadline.setHours(hours, minutes, 0, 0);
 
-    if (data.quests.every(q => q.completed) && !data.bonusClaimed) {
-      data.bonusClaimed = true;
-      Store.set(`quests_${today}`, data);
-      const bonus = XP.award('quest_bonus', 'All quests complete!', data.allCompleteBonus);
-      setTimeout(() => XP.showXPGain(bonus.amount, 'All Quests Bonus'), 500);
+    const onTime = now <= deadline;
+    const baseXP = this.xpForRank(task.rank);
+    task.xp = onTime ? Math.round(baseXP * 1.5) : baseXP;
+
+    this.saveTasks(today, data);
+
+    const result = XP.award('quest', task.name, task.xp);
+    XP.showXPGain(result.amount, onTime ? `${task.name} (On Time!)` : task.name);
+
+    if (data.tasks.every(t => t.completed)) {
+      const bonus = XP.award('quest_bonus', 'All tasks complete!', 50);
+      setTimeout(() => XP.showXPGain(bonus.amount, 'All Tasks Bonus!'), 500);
     }
 
-    if (typeof Home !== 'undefined' && App.currentSection === 'home') {
-      Home.render();
-    }
+    if (App.currentSection === 'home') Home.render();
+  },
+
+  rankFromTime(time) {
+    const [h] = time.split(':').map(Number);
+    if (h < 7) return 'A';
+    if (h < 10) return 'B';
+    if (h < 14) return 'C';
+    return 'D';
+  },
+
+  xpForRank(rank) {
+    const xp = { A: 60, B: 40, C: 25, D: 15 };
+    return xp[rank] || 15;
   },
 
   rankColor(rank) {
     const colors = { D: '#3b82f6', C: '#22c55e', B: '#eab308', A: '#f97316', S: '#ef4444' };
     return colors[rank] || 'var(--accent)';
+  },
+
+  openPlanner() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateStr = Store.formatDate(tomorrow);
+    const data = Store.get(`quests_${dateStr}`) || { date: dateStr, tasks: [] };
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'quest-modal';
+    overlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-title">Plan Tomorrow — ${dateStr}</div>
+        <div id="planner-tasks">
+          ${data.tasks.map(t => `
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span style="font-size: 0.75rem; color: var(--accent); font-family: 'Orbitron', sans-serif; width: 50px;">${t.time}</span>
+              <span style="flex: 1; font-size: 0.82rem;">${t.name}</span>
+              <button class="btn btn-sm btn-danger" onclick="Quests.removeTomorrowTask('${t.id}')">×</button>
+            </div>
+          `).join('')}
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 14px;">
+          <input class="form-input" id="quest-time" type="time" style="width: 110px;">
+          <input class="form-input" id="quest-name" placeholder="Task name" style="flex: 1;">
+          <button class="btn btn-sm btn-primary" onclick="Quests.addTomorrowTask()">+</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="Quests.closePlanner()">Done</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  },
+
+  addTomorrowTask() {
+    const time = document.getElementById('quest-time').value;
+    const name = document.getElementById('quest-name').value.trim();
+    if (!time || !name) return;
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateStr = Store.formatDate(tomorrow);
+
+    this.addTask(dateStr, { name, time });
+    this.closePlanner();
+    this.openPlanner();
+  },
+
+  removeTomorrowTask(taskId) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dateStr = Store.formatDate(tomorrow);
+    this.removeTask(dateStr, taskId);
+    this.closePlanner();
+    this.openPlanner();
+  },
+
+  closePlanner() {
+    const modal = document.getElementById('quest-modal');
+    if (modal) modal.remove();
   }
 };

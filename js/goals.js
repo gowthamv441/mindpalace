@@ -209,14 +209,7 @@ const Goals = {
     const result = XP.award('goal', goal.title, XP.rewards.goalComplete);
     XP.showXPGain(result.amount, 'Boss Defeated!');
 
-    const shadowType = Shadows.getShadowTypeForGoal(goal);
-    const shadowRank = Shadows.getRankForGoal(goal);
-    Shadows.addShadow({
-      name: goal.title,
-      type: shadowType,
-      source: `goal:${goal.id}`,
-      rank: shadowRank
-    });
+    Shadows.awardXPByCategory('other', 50);
 
     this.render();
   },

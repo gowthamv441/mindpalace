@@ -8,7 +8,7 @@ const Profile = {
     const saved = Store.get('hunter_profile');
     if (saved) return saved;
     return {
-      hunterName: 'Hunter',
+      hunterName: 'Gowtham',
       hunterClass: 'Fighter',
       rank: 'E',
       level: 1,
@@ -128,10 +128,6 @@ const Profile = {
   closeModal() {
     const modal = document.getElementById('profile-modal');
     if (modal) modal.remove();
-  },
-
-  getTotalEntries() {
-    return Store.getAll('journal_').length;
   },
 
   getTotalHabits() {

@@ -77,26 +77,36 @@ const Home = {
       <div class="panel" style="margin-top: 20px;">
         <div class="corner-bl"></div>
         <div class="corner-br"></div>
-        <h3 class="profile-section-title">Daily Quests</h3>
-        <div class="quest-list">
-          ${questData.quests.map(q => `
-            <div class="quest-item ${q.completed ? 'done' : ''}" onclick="${q.completed ? '' : `Quests.completeQuest('${q.id}')`}">
-              <div class="quest-check">${q.completed ? '&#10003;' : ''}</div>
-              <div class="quest-info">
-                <div class="quest-name">${q.name}</div>
-                <div class="quest-meta">
-                  <span class="quest-rank" style="color: ${Quests.rankColor(q.rank)}">${q.rank}-Rank</span>
-                  <span>+${q.xp} XP</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 class="profile-section-title" style="margin-bottom: 0;">Today's Tasks</h3>
+          <button class="btn btn-sm btn-primary" onclick="Quests.openPlanner()">Plan Tomorrow</button>
+        </div>
+        ${questData.tasks.length > 0 ? `
+          <div class="quest-list">
+            ${questData.tasks.map(t => `
+              <div class="quest-item ${t.completed ? 'done' : ''}" onclick="${t.completed ? '' : `Quests.completeTask('${t.id}')`}">
+                <div class="quest-check">${t.completed ? '&#10003;' : ''}</div>
+                <div class="quest-info">
+                  <div class="quest-name">${t.name}</div>
+                  <div class="quest-meta">
+                    <span style="font-family: 'Orbitron', sans-serif; font-size: 0.65rem; color: var(--accent);">${t.time}</span>
+                    <span class="quest-rank" style="color: ${Quests.rankColor(t.rank)}">${t.rank}-Rank</span>
+                    <span>${t.completed ? '+' + t.xp : '+' + Quests.xpForRank(t.rank)} XP</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          `).join('')}
-        </div>
-        ${questData.quests.every(q => q.completed) ? `
-          <div style="text-align: center; margin-top: 12px; font-size: 0.8rem; color: var(--accent);">
-            All quests complete! +${questData.allCompleteBonus} XP bonus ${questData.bonusClaimed ? '(claimed)' : ''}
+            `).join('')}
           </div>
-        ` : ''}
+          ${questData.tasks.every(t => t.completed) ? `
+            <div style="text-align: center; margin-top: 12px; font-size: 0.8rem; color: var(--accent);">
+              All tasks complete! +50 XP bonus
+            </div>
+          ` : ''}
+        ` : `
+          <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 0.8rem;">
+            No tasks planned for today. Tap "Plan Tomorrow" to schedule.
+          </div>
+        `}
       </div>
 
       ${gateStatus ? `
@@ -146,10 +156,6 @@ const Home = {
         <h3 class="profile-section-title">Summary</h3>
         <div class="profile-summary-grid">
           <div class="stat">
-            <div class="num">${Profile.getTotalEntries()}</div>
-            <div class="label">Journal</div>
-          </div>
-          <div class="stat">
             <div class="num">${Profile.getTotalHabits()}</div>
             <div class="label">Habits</div>
           </div>
@@ -158,8 +164,12 @@ const Home = {
             <div class="label">Goals</div>
           </div>
           <div class="stat">
-            <div class="num">${Shadows.getShadows().length}</div>
-            <div class="label">Shadows</div>
+            <div class="num">${Shadows.getSoldiers().length}</div>
+            <div class="label">Soldiers</div>
+          </div>
+          <div class="stat">
+            <div class="num">${xpState.currency || 0}</div>
+            <div class="label">Gold</div>
           </div>
         </div>
       </div>
@@ -167,10 +177,6 @@ const Home = {
       <div class="home-nav-section">
         <h3 class="profile-section-title" style="margin-bottom: 12px; margin-top: 28px;">Quick Access</h3>
         <div class="home-nav-cards">
-          <div class="home-nav-card" onclick="App.navigate('journal')">
-            <img class="home-nav-img" src="https://api.iconify.design/mdi/book-edit-outline.svg?color=%234cc9ff" alt="">
-            <span class="home-nav-label">Journal</span>
-          </div>
           <div class="home-nav-card" onclick="App.navigate('workouts')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/dumbbell.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Workout</span>
@@ -183,16 +189,12 @@ const Home = {
             <img class="home-nav-img" src="https://api.iconify.design/mdi/store-outline.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Shop</span>
           </div>
-        </div>
-        <div class="home-nav-cards" style="margin-top: 10px;">
           <div class="home-nav-card" onclick="App.navigate('achievements')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/trophy-outline.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Achieve</span>
           </div>
-          <div class="home-nav-card" onclick="App.navigate('settings')">
-            <img class="home-nav-img" src="https://api.iconify.design/mdi/cog-outline.svg?color=%234cc9ff" alt="">
-            <span class="home-nav-label">Settings</span>
-          </div>
+        </div>
+        <div class="home-nav-cards" style="margin-top: 10px;">
           <div class="home-nav-card" onclick="App.navigate('library')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/bookshelf.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Library</span>
@@ -200,6 +202,14 @@ const Home = {
           <div class="home-nav-card" onclick="App.navigate('habits')">
             <img class="home-nav-img" src="https://api.iconify.design/mdi/sword-cross.svg?color=%234cc9ff" alt="">
             <span class="home-nav-label">Habits</span>
+          </div>
+          <div class="home-nav-card" onclick="App.navigate('settings')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/cog-outline.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Settings</span>
+          </div>
+          <div class="home-nav-card" onclick="App.navigate('goals')">
+            <img class="home-nav-img" src="https://api.iconify.design/mdi/target-arrow.svg?color=%234cc9ff" alt="">
+            <span class="home-nav-label">Goals</span>
           </div>
         </div>
       </div>
@@ -218,7 +228,7 @@ const Home = {
       <div class="panel" style="margin-top: 20px;">
         <div class="corner-bl"></div>
         <div class="corner-br"></div>
-        <h3 class="profile-section-title">${weekly.icon} Weekly Dungeon: ${weekly.name}</h3>
+        <h3 class="profile-section-title">&#9876; ${weekly.name}</h3>
         <div style="font-size: 0.7rem; color: var(--muted); margin-bottom: 12px;">${weekly.startDate} to ${weekly.endDate}</div>
         <div class="quest-list">
           ${weekly.challenges.map(c => `
@@ -259,14 +269,14 @@ const Home = {
   },
 
   renderShadowArmy() {
-    const shadows = Shadows.getShadows();
+    const soldiers = Shadows.getSoldiers();
     return `
       <div class="panel" style="margin-top: 20px;">
         <div class="corner-bl"></div>
         <div class="corner-br"></div>
-        <h3 class="profile-section-title">&#9876; Shadow Army (${shadows.length})</h3>
+        <h3 class="profile-section-title">&#9876; Shadow Army (${soldiers.length})</h3>
         ${Shadows.renderArmy()}
-        ${shadows.length > 0 ? `<div style="font-size: 0.7rem; color: var(--muted); margin-top: 10px;">Passive XP Bonus: +${Math.round(Shadows.getPassiveBonus() * 100)}%</div>` : ''}
+        ${soldiers.length > 0 ? `<div style="font-size: 0.7rem; color: var(--muted); margin-top: 10px;">Passive XP Bonus: +${Math.round(Shadows.getPassiveBonus() * 100)}%</div>` : ''}
       </div>
     `;
   },
