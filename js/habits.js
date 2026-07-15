@@ -58,6 +58,68 @@ const Habits = {
     return { fullDays, currentStreak, pct };
   },
 
+  getDayPercentage(day) {
+    const habits = this.getHabits();
+    if (habits.length === 0) return 0;
+    const data = this.getDayData(day);
+    const done = habits.filter(h => data[h.id]).length;
+    return Math.round((done / habits.length) * 100);
+  },
+
+  getGraphData() {
+    const TOTAL = 75;
+    const days = [];
+    for (let i = 1; i <= TOTAL; i++) {
+      days.push({ day: i, pct: this.getDayPercentage(i) });
+    }
+    return days;
+  },
+
+  renderGraph() {
+    const data = this.getGraphData();
+    const day = this.currentDay;
+    const hasData = data.some(d => d.pct > 0);
+
+    if (!hasData) {
+      return `
+        <div class="habits-graph-section">
+          <h2>Completion Graph</h2>
+          <div class="habits-graph-empty">Complete habits to see your progress graph</div>
+        </div>`;
+    }
+
+    const bars = data.map(d => {
+      let cls = 'graph-bar';
+      if (d.day === day) cls += ' active';
+      if (d.pct === 100) cls += ' full';
+      else if (d.pct > 0) cls += ' partial';
+      return `<div class="${cls}" style="--bar-h:${d.pct}%" title="Day ${d.day}: ${d.pct}%"><span class="graph-bar-tip">${d.pct}%</span></div>`;
+    }).join('');
+
+    const avg = Math.round(data.reduce((s, d) => s + d.pct, 0) / data.length);
+    const daysWithData = data.filter(d => d.pct > 0).length;
+    const perfectDays = data.filter(d => d.pct === 100).length;
+
+    return `
+      <div class="habits-graph-section">
+        <h2>Completion Graph</h2>
+        <div class="habits-graph-stats">
+          <span><strong>${avg}%</strong> avg</span>
+          <span><strong>${perfectDays}</strong> perfect days</span>
+          <span><strong>${daysWithData}</strong> active days</span>
+        </div>
+        <div class="habits-graph-container">
+          <div class="habits-graph-y">
+            <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+          </div>
+          <div class="habits-graph-bars">${bars}</div>
+        </div>
+        <div class="habits-graph-x">
+          <span>Day 1</span><span>Day 25</span><span>Day 50</span><span>Day 75</span>
+        </div>
+      </div>`;
+  },
+
   render() {
     const section = document.getElementById('section-habits');
     const TOTAL = 75;
@@ -120,6 +182,8 @@ const Habits = {
         <h2>All 75 Days</h2>
         <div class="grid">${gridCells}</div>
       </div>
+
+      ${this.renderGraph()}
 
       <button class="reset-btn" onclick="Habits.resetAll()">Reset all progress</button>
     `;

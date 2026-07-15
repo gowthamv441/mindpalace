@@ -335,6 +335,123 @@ body {
   box-shadow: var(--accent-glow);
 }
 
+/* Habits Graph */
+.habits-graph-section {
+  margin: 24px 0;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.habits-graph-section h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.habits-graph-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.habits-graph-stats strong {
+  color: var(--accent);
+}
+
+.habits-graph-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.habits-graph-container {
+  display: flex;
+  gap: 8px;
+  height: 140px;
+}
+
+.habits-graph-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.6rem;
+  color: var(--muted);
+  padding: 0 4px 0 0;
+  text-align: right;
+  min-width: 32px;
+}
+
+.habits-graph-bars {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  padding-left: 1px;
+  position: relative;
+}
+
+.graph-bar {
+  flex: 1;
+  height: var(--bar-h, 0%);
+  min-height: 1px;
+  background: var(--border);
+  border-radius: 2px 2px 0 0;
+  transition: height 0.3s ease, background 0.2s;
+  position: relative;
+  cursor: pointer;
+}
+
+.graph-bar.partial {
+  background: rgba(76, 201, 255, 0.35);
+}
+
+.graph-bar.full {
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(76, 201, 255, 0.3);
+}
+
+.graph-bar.active {
+  outline: 1px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.graph-bar-tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: var(--accent);
+  white-space: nowrap;
+  background: var(--bg);
+  padding: 2px 4px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+.graph-bar:hover .graph-bar-tip {
+  display: block;
+}
+
+.habits-graph-x {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6rem;
+  color: var(--muted);
+  padding: 4px 0 0 40px;
+}
+
 /* Cards */
 .card {
   background: var(--bg);
